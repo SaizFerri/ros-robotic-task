@@ -1,0 +1,8 @@
+<launch>
+
+  <group ns="smart_camera_cam">
+    <node pkg="smart_camera" name="cam" type="cam.py"/>
+    <node pkg="smart_camera" name="processor" type="processor.py"/>
+  </group>
+
+</launch>

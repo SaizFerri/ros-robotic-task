@@ -8,7 +8,7 @@ from std_msgs.msg import String, Int32
 def talker():
     image_pub = rospy.Publisher('image', String, queue_size=5)
     int_pub = rospy.Publisher('number', Int32, queue_size=5)
-    rospy.init_node('cam', anonymous=True)
+    rospy.init_node('cam')
     rate = rospy.Rate(0.5)
 
     while not rospy.is_shutdown():
