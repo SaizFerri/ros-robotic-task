@@ -15,7 +15,7 @@ def talker():
     bridge = CvBridge()
     imgMsg = bridge.cv2_to_imgmsg(img, encoding="rgb8")
     image_pub = rospy.Publisher('/camera/image', Image, queue_size=5)
-    int_pub = rospy.Publisher('/camera/number', IntWithHeader, queue_size=5)
+    int_pub = rospy.Publisher('/camera/class', IntWithHeader, queue_size=5)
     rospy.init_node('cam')
     rate = rospy.Rate(0.5)
 
