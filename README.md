@@ -4,12 +4,12 @@
 
 * [Description](#description)
 * [Task 1](#task-1)
-  * [ROS Introduction](#ROS Introduction)
-  * [ROS Basics](#ROS Basics)
+  * [ROS Introduction](#ROS-Introduction)
+  * [ROS Basics](#ROS-Basics)
     * [Nodes](#Nodes)
     * [Topics](#Topics)
     * [Messages](#Messages)
-  * [Task goal](#Task goal)
+  * [Task goal](#Task-goal)
 * Task 2
 * Task 3
 
@@ -56,4 +56,4 @@ In this task we set up the structure of the project.
 
 At the end of this task, our program structure looks like this:
 
-<img src="task1-png" alt="Task 1" />
+<img src="task1.png" alt="Task 1" />
