@@ -51,7 +51,7 @@ In this task we set up the structure of the project.
 2. We set up the `cam`node to publish 2 topics:
    * `/camera/image` which publishes an image with a handwritten digit
    * `/camera/class` which publishes the value of the digit with a custom message type
-3. The `processor` node subscribes to the `/camera/image` and processes the image. The image is converted to a greyscale image and is croped. Afterwards the processed image is published to the `/processed/image`.
+3. The `processor` node subscribes to the `/camera/image` and processes the image. The image is converted to a greyscale image and is croped. Afterwards the processed image is published to the `/processed/image` topic.
 4. We write a launch file to start both nodes with a single command
 
 At the end of this task, our program structure looks like this:
