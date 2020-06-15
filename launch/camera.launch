@@ -3,6 +3,7 @@
   <group ns="smart_camera">
     <node pkg="smart_camera" name="cam" type="cam.py"/>
     <node pkg="smart_camera" name="processor" type="processor.py"/>
+    <node pkg="smart_camera" name="ai_server" type="ai_server.py"/>
     <node pkg="smart_camera" name="controller" type="controller.py"/>
   </group>
 

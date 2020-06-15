@@ -57,7 +57,7 @@ add_message_files(
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  ai.srv
+  Ai.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -162,6 +162,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/ai_server.py
+  scripts/ai_client.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

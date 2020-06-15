@@ -1,17 +1,20 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 
-from smart_camera.srv import ai, aiResponse
+from smart_camera.srv import Ai, AiResponse
 import rospy
 
-def handle_add_two_ints(req):
-    print("Returning [%s + %s = %s]"%(req.a, req.b, (req.a + req.b)))
-    return aiResponse(req.a + req.b)
+def handle_request(req):
+    response = 0
+    print("Returning class %s"%response)
+    return AiResponse(response)
 
-def add_two_ints_server():
-    rospy.init_node('add_two_ints_server')
-    s = rospy.Service('add_two_ints', ai, handle_add_two_ints)
-    print("Ready to add two ints.")
+def ai_server():
+    rospy.init_node('ai_server')
+    s = rospy.Service('ai', Ai, handle_request)
+    print("Ready to classify an image.")
     rospy.spin()
 
 if __name__ == "__main__":
-    add_two_ints_server()
+    ai_server()
