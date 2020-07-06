@@ -17,6 +17,7 @@ values = []
 def callback(image, _class):
     bridge = CvBridge()
     _image = bridge.imgmsg_to_cv2(image)
+    rospy.loginfo(_class.header)
 
     values.append({ _class.data: _image })
 
