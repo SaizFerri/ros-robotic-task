@@ -29,6 +29,7 @@ def callback(image, _class):
         print("Service call failed: %s"%e)
 
     rospy.loginfo(rospy.get_caller_id() + " Reciving -> %s", { _class.data: _image })
+    rospy.loginfo(rospy.get_caller_id() + " Values -> %s", values)
     
 def listener():
     rospy.init_node('controller')
