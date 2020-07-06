@@ -24,15 +24,15 @@ def callback(image, _class):
     try:
         classify = rospy.ServiceProxy('ai', Ai)
         response = classify(image)
-        rospy.loginfo("Service response: %s"%response.result)
+        rospy.loginfo("Ground truth: %s --- "%_class.data + "Predicted value: %s"%response.result)
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
 
-    rospy.loginfo(rospy.get_caller_id() + " Reciving -> %s", { _class.data: _image })
-    rospy.loginfo(rospy.get_caller_id() + " Values -> %s", values)
+    # rospy.loginfo(rospy.get_caller_id() + " Reciving -> %s", { _class.data: _image })
+    # rospy.loginfo(rospy.get_caller_id() + " Values -> %s", values)
     
 def listener():
-    rospy.init_node('controller')
+    rospy.init_node('controller', anonymous=True)
 
     image_sub = message_filters.Subscriber("/processed/image", Image)
     class_sub = message_filters.Subscriber("/camera/class", IntWithHeader)
