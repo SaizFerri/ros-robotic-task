@@ -25,6 +25,11 @@
   * [Optimization](#Optimization)
   * [Backpropagation](#Backpropagation)
   * [Convolutional Neural Networks](#Convolutional-Neural-Networks)
+  * [Training the neural network for MNIST](#Training-the-neural-network-for-MNIST)
+  * [Training a convolutional neural network](#Training-a-convolutional-neural-network)
+  * [Modifying the ROS application](#Modifying-the-ROS-application)
+* [Experimenting with the neural network training](#Experimenting-with-the-neural-network-training)
+* [Sources](#Sources)
 
 
 
@@ -111,7 +116,7 @@ Our service file looks like this:
 
 ```python
 # Ai.srv
-sensor_msgs/Image Image
+sensor_msgs/Image image
 ---
 int32 result
 ```
@@ -128,7 +133,7 @@ At the end of this task our program structure looks like this:
 
 ## Task 3
 
-In this task we create a neural network which takes a handwritten digit image and outputs the digit as an integer. Moreover we modify the `ai_server` script to use the trained neural network and return the prediction to the controller node.
+In this task we create a neural network which takes a handwritten digit image and outputs the digit as an integer. Moreover we modify the ROS application to use the trained neural network.
 
 ### Feedforward Neural Networks
 
@@ -138,7 +143,7 @@ This network is called feedforward because the information flows through the fun
 
 Feedforward neural networks are called networks because they are typically represented by composing together many different functions. For example, we might have 3 functions $f^{(1)}$, $f^{(2)}$, $f^{(3)}$ connected in a chain, to form $ f(\textbf{x}) = f^{(3)}(f^{(2)}(f^{(1)}(\textbf{x}))) $. In this case, $f^{(1)}$ is the first layer, $f^{(2)}$ is the second layer, and so on. [[1](#Sources), 163-165]
 
-Each layer is composed of neurons. Neurons take a set of inputs $x$, trainable parameters $\theta$ (or also called weights $w$) and a bias value $b$ and compute a result with the following function $\sum_{i} w_i x_i + b$. This result goes then through an activation function $f(\sum_{i} w_i x_i + b)$ and its the output of the neuron.
+Each layer is composed of neurons. Neurons take a set of inputs $x$, trainable parameters $\theta$ (or also called weights $w$) and a bias value $b$ and compute a result with the following function $\sum_{i} w_i x_i + b$. This result goes then through an activation function $f(\sum_{i} w_i x_i + b)$.
 
 An activation function thresholds the output of the neuron within a numerical range. An example of an activation function is the ReLU activation function defined as $ f(x) = max(0, x) $. All negative values are converted to 0 and all positive values are unchanged.
 
@@ -152,7 +157,7 @@ The forward pass of a neural network is computed with matrix multiplications.
 
 Imagine we have a 3 layer fully-connected neural network, the first layer has 128 neurons, the second layer has 64 and the output layer has 10 neurons which corresponds with our 10 digit classes (from 0 to 9).
 
-In the case of our task we have $28 \times 28$ grayscale images. To feed them into a fully-connected neural network we need to convert these to a 1 dimensional vector of size $[784 \times 1]$. The first layer computes $[1 \times 784] * [784 \times 128] + b$. The second layer computes $[1 \times 128] * [128 \times 64] + b$. The output layer computes $[1 \times 64] * [64 \times 10]$. After each layer except the output layer, follows a ReLU activation function. The output of the network is a $[1 \times 10]$ vector containing a probability for each class. The sum of all probabilities is 1.
+In the case of our task we have $28 \times 28$ grayscale images. To feed them into a fully-connected neural network we need to convert these to a 1 dimensional vector of size $[784 \times 1]$. The first layer computes a matrix multiplication with 2 matrix of the following dimensions and adds the bias value: $[1 \times 784] * [784 \times 128] + b$. The second layer also computes a matrix multiplication with 2 matrix of the following dimensions and adds the bias value: $[1 \times 128] * [128 \times 64] + b$. The output layer computes a matrix multiplication with 2 matrix of the following dimensions and also adds the bias value $[1 \times 64] * [64 \times 10] + b$. After each layer except the output layer, follows a ReLU activation function. The output of the network is a $[1 \times 10]$ vector, which goes through a softmax layer, containing a probability distribution for each class. The sum of all probabilities is 1.
 
 ### Softmax
 
@@ -192,7 +197,7 @@ The accuracy of this model is ~97%.
 
 ### Training a convolutional neural network
 
-In addition to the fully-connected network, I trained a convolutional neural network to compare the results. The CNN is composed of a single convolutional layer with 32 filters of size $3 \times 3$, stride 1 and padding 1. The convolutional layer was followed by a pooling layer of size $2 \times 2$, to reduce the dimensions of the image by a factor of 2, and 3 fully-connected layers with 120, 84 and 10 neurons. The convolutional layer and both first fully-connected layers are followed by a ReLU activation function. The model was also trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs.
+In addition to the fully-connected network, I trained a convolutional neural network to compare the results. The CNN is composed of a single convolutional layer with 32 filters of size $3 \times 3$, stride 1 and padding 1. The convolutional layer was followed by a pooling layer to reduce the dimensions of the image by a factor of 0.5, and 3 fully-connected layers with 120, 84 and 10 neurons. The convolutional layer and both first fully-connected layers are followed by a ReLU activation function. The model was also trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs.
 
 The accuracy of this model is ~98%.
 
@@ -263,5 +268,5 @@ Different optimizers and learning rates:
 ## Sources
 
 1. Ian Goodfellow, Yoshua Bengio und Aaron Courville. Deep Learning. http://www.deeplearningbook.org. MIT Press, 2016. Visited 05.09.2020
-2. ML Glossary, Loss functions. [https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross%2Dentropy%20loss%2C%20or%20log,diverges%20from%20the%20actual%20label.&text=As%20the%20predicted%20probability%20decreases,the%20log%20loss%20increases%20rapidly.](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross-entropy loss%2C or log,diverges from the actual label.&text=As the predicted probability decreases,the log loss increases rapidly.). Visited 05.09.2020.
+2. ML Glossary, Loss functions. [https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross%2Dentropy%20loss%2C%20or%20log,diverges%20from%20the%20actual%20label.&text=As%20the%20predicted%20probability%20decreases,the%20log%20loss%20increases%20rapidly](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross-entropy loss%2C or log,diverges from the actual label.&text=As the predicted probability decreases,the log loss increases rapidly.). Visited 05.09.2020.
 
