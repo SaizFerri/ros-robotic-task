@@ -31,7 +31,9 @@
 * [Experimenting with the neural network training](#Experimenting-with-the-neural-network-training)
 * [Sources](#Sources)
 
+## Requirements
 
+For this to work you need to train a model with one of the provided notebooks and move the `weights.pt` file to `/scripts/`.
 
 ## Description
 
