@@ -164,7 +164,7 @@ A loss function measures how wrong the prediction of our network is. Typically t
 
 ### Optimization
 
-The goal of a neural network is to minimize the loss and therefore find the best combination of parameters. One could manually adjust the parameters until a perfect set is found but this would take a lot of time. Instead we can use the partial derivative of the loss function which gives us a gradient. This gradient points in the direction of steepest ascent, if we take the negative of the gradient we can update the parameters by this gradient and through an iterative process arrive at the bottom of the function which corresponds to the best set of parameters.
+The goal of a neural network is to minimize the loss and therefore find the best combination of parameters. One could manually adjust the parameters until a perfect set is found but this would take a lot of time. Instead we can use the partial derivative of the loss function which gives us a gradient. This gradient points in the direction of steepest ascent, if we take the negative of the gradient we can update the parameters by this gradient and through an iterative process arrive at the bottom of the function which corresponds to the best set of parameters. For this task I used the Adam optimizer.
 
 ### Backpropagation
 
@@ -172,9 +172,25 @@ To calculate the partial derivative of very complex functions there is an algori
 
 ### Convolutional Neural Networks
 
-Convolutional neural networks are a special kind of neural networks which work extremely well with images. In this kind of neural networks the image is not converted to a vector and is left at its original dimensions, in our case $28 \times 28$. The neurons of the layers of this network are arranged in filters of typically size $3 \times 3$ or $5 \times 5$ stacked on each other. This filters are slided (or convolved) over the image with a fixed step size called stride and it computes matrix multiplications at each position. The output of a layer is a feature map which is fed into the next layer. The size of this feature map depends on the size of the filter, the stride and the padding.
+Convolutional neural networks (CNN) are a special kind of neural networks which work extremely well with images. In this kind of neural networks the image is not converted to a vector and is left at its original dimensions, in our case $28 \times 28$. The neurons of the layers of this network are arranged in filters of typically size $3 \times 3$ or $5 \times 5$ stacked on each other. This filters are slided (or convolved) over the image with a fixed step size called stride and computes matrix multiplications at each position. The output of a layer is a feature map which is fed into the next layer. The size of this feature map depends on the size of the filter, the stride and the padding.
 
 Convolutional neural networks maintain the spatial dimensions, thus they maintain the location of the objects on the images.
+
+### Training the neural network for MNIST
+
+ For the implementation of the neural network, the framework pytorch was used.
+
+Firstly I imported the MNIST dataset from `torchvision.datasets` and converted the images to a vector with a [Transform](https://pytorch.org/docs/stable/torchvision/transforms.html?highlight=transform). This creates a train and a test split of the dataset. Secondly I created a [Dataloader](https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader) for each split and specified a batch size of 64.
+
+Once the dataset was ready I defined the model. The model is composed of 2 hidden layers and one output layer. The first layer has 128 neurons and the second 64 neurons. Both hidden layers are followed by a ReLU activation function. The output layer has 10 classes corresponding to the digits from 0 to 9, after this layer the values are converted to a probability distribution with softmax.
+
+Afterwards I defined the training loop. The model was trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs. After the 10 epochs the model with the lowest loss was saved on a file named `best_mnist_w.pt`.
+
+This file was imported in the ROS application for the prediction.
+
+### Training a convolutional neural network
+
+In addition to the fully-connected network, I trained a convolutional neural network to compare the results. The CNN is composed of a single convolutional layer with 32 filters of size $3 \times 3$, stride 1 and padding 1. The convolutional layer was followed by a pooling layer of size $2 \times 2$, to reduce the dimensions of the image by a factor of 2, and 3 fully-connected layers with 120, 84 and 10 neurons. The convolutional layer and both first fully-connected layers are followed by a ReLU activation function. The model was also trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs.
 
 ## Sources
 
