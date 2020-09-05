@@ -184,16 +184,84 @@ Firstly I imported the MNIST dataset from `torchvision.datasets` and converted t
 
 Once the dataset was ready I defined the model. The model is composed of 2 hidden layers and one output layer. The first layer has 128 neurons and the second 64 neurons. Both hidden layers are followed by a ReLU activation function. The output layer has 10 classes corresponding to the digits from 0 to 9, after this layer the values are converted to a probability distribution with softmax.
 
-Afterwards I defined the training loop. The model was trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs. After the 10 epochs the model with the lowest loss was saved on a file named `best_mnist_w.pt`.
+Afterwards I defined the training loop. The model was trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs. After the 10 epochs the model with the lowest loss was saved on a file named `weights.pt`.
 
 This file was imported in the ROS application for the prediction.
+
+The accuracy of this model is ~97%.
 
 ### Training a convolutional neural network
 
 In addition to the fully-connected network, I trained a convolutional neural network to compare the results. The CNN is composed of a single convolutional layer with 32 filters of size $3 \times 3$, stride 1 and padding 1. The convolutional layer was followed by a pooling layer of size $2 \times 2$, to reduce the dimensions of the image by a factor of 2, and 3 fully-connected layers with 120, 84 and 10 neurons. The convolutional layer and both first fully-connected layers are followed by a ReLU activation function. The model was also trained with a cross-entropy loss and the adam optimizer with a learning rate of 0.01 for 10 epochs.
 
+The accuracy of this model is ~98%.
+
+### Modifying the ROS application
+
+For the application to work with the trained model we have to modify some components. Firstly we need to load an actual MNIST image in the camera node. For this I used `cv2.imread` and created a helper function to read the image. With the help of the `random`package I generate a random number from 0 to 9, load the corresponding image and publish it on the `/camera/image` topic. The random generated number is also published on the `/camera/class` topic.
+
+The processor node listening on the `/camera/image` topic receives an image and with the help of the method `imgmsg_to_cv2(image, 'mono8')` from `CvBridge`, converts the RGB image to a grayscale image. The converted image is then published on the `/processed/image` topic.
+
+Afterwards we have to modify the `ai_server` to be able to work with pytorch. After importing all the packages we need to normalize the image, this means to bring all the pixel values to a number between 0 and 1. Also we have to convert the integer values to floats.
+
+Subsequently we need to define a function to generate the model:
+
+```python
+def generate_model():
+  return nn.Sequential(
+    nn.Linear(784, 128),
+    nn.ReLU(),
+    nn.Linear(128, 64),
+    nn.ReLU(),
+    nn.Linear(64, 10),
+    nn.LogSoftmax(dim=1)
+  )
+```
+
+In addition to generating the model we need a function to load and transform the image for pytorch.
+
+```python
+def load_image(img):
+  loader = transforms.Compose([transforms.ToTensor()])
+  return loader(img).float()
+```
+
+After this we create a function to make the actual prediction with the trained model. This function takes an image, loads the trained model and evaluates the image. The output is the integer class value of the image.
+
+The controller node receives the processed image from `/processed/image` and the ground truth class from `/camera/class`. With this it sends a request to the `ai_server`node which responds with the prediction class. The controller node then outputs both, the ground truth and prediction to the console.
+
+## Experimenting with the neural network training
+
+### Linear model
+
+Different optimizers:
+
+<div style="display: flex; justify-content: center;">
+    <img src="images/1_linear.png">
+    <img src="images/2_linear.png">
+</div>
+
+Different optimizers and learning rates:
+
+<div style="display: flex; justify-content: center;">
+    <img src="images/4_linear.png">
+    <img src="images/3_linear.png">
+</div>
+
+### Convolutional model
+
+<div style="display: flex; justify-content: center;">
+    <img src="images/1_conv.png">
+    <img src="images/2_conv.png">
+</div>
+
+<div style="display: flex; justify-content: center;">
+    <img src="images/4_conv.png">
+    <img src="images/3_conv.png">
+</div>
+
 ## Sources
 
 1. Ian Goodfellow, Yoshua Bengio und Aaron Courville. Deep Learning. http://www.deeplearningbook.org. MIT Press, 2016. Visited 05.09.2020
-2. ML Glossary, Loss functions. [https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross%2Dentropy%20loss%2C%20or%20log,diverges%20from%20the%20actual%20label.&text=As%20the%20predicted%20probability%20decreases,the%20log%20loss%20increases%20rapidly.](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross-entropy loss%2C or log,diverges from the actual label.&text=As the predicted probability decreases,the log loss increases rapidly.),. Visited 05.09.2020.
+2. ML Glossary, Loss functions. [https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross%2Dentropy%20loss%2C%20or%20log,diverges%20from%20the%20actual%20label.&text=As%20the%20predicted%20probability%20decreases,the%20log%20loss%20increases%20rapidly.](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html#:~:text=Cross-entropy loss%2C or log,diverges from the actual label.&text=As the predicted probability decreases,the log loss increases rapidly.). Visited 05.09.2020.
 
